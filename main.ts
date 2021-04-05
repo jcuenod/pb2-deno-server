@@ -61,3 +61,12 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 await app.listen({ port: 8080 });
+
+// Single chapter lookup with `chapter`:
+// http://localhost:8080/api/v2/chapter/BHSA/26036
+
+// Word lookup with `word`:
+// http://localhost:8080/api/v2/word/7/282934
+
+// Search for terms with `termSearch`:
+// http://localhost:8080/api/v2/termSearch/eyJ0ZXJtcyI6W3siZGF0YSI6eyJyZWFsaXplZF9sZXhlbWUiOiLXmNa415TWudeoIn0sImludmVydGVkIjpmYWxzZSwidWlkIjoxMjN9LHsiZGF0YSI6eyJyZWFsaXplZF9sZXhlbWUiOiLXnta315nWtNedIn0sImludmVydGVkIjpmYWxzZSwidWlkIjoxMjR9XSwibm9kZSI6ImNsYXVzZV9ub2RlX2lkIn0=

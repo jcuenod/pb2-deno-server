@@ -118,7 +118,7 @@ export default termSearchEndpoint;
 //     uid: 123,
 //   }, {
 //     data: {
-//       "realized_lexeme": "טָהֹר",
+//       "realized_lexeme": "מַיִם",
 //     },
 //     inverted: false,
 //     uid: 124,
@@ -128,3 +128,6 @@ export default termSearchEndpoint;
 
 //  'eyJ0ZXJtcyI6W3siZGF0YSI6eyJwYXJ0X29mX3NwZWVjaCI6InZlcmIiLCJzdGVtIjoiaGlmIiwibnVtYmVyIjoic2ciLCJwZXJzb25fcHMiOiJwMyJ9LCJpbnZlcnRlZCI6ZmFsc2UsInVpZCI6MTIzfV0sIm5vZGUiOiJjbGF1c2UifQ=='
 //  'eyJ0ZXJtcyI6W3siZGF0YSI6eyJwYXJ0X29mX3NwZWVjaCI6InZlcmIiLCJzdGVtIjoiaG90cCIsIm51bWJlciI6InNnIiwicGVyc29uIjoiMyJ9LCJpbnZlcnRlZCI6ZmFsc2UsInVpZCI6MTIzfSx7ImRhdGEiOnsicGFydF9vZl9zcGVlY2giOiJwcmVwIn0sImludmVydGVkIjpmYWxzZSwidWlkIjoxMjN9XSwibm9kZSI6ImNsYXVzZV9ub2RlX2lkIn0='
+
+// Use me:
+// 'eyJ0ZXJtcyI6W3siZGF0YSI6eyJyZWFsaXplZF9sZXhlbWUiOiLXmNa415TWudeoIn0sImludmVydGVkIjpmYWxzZSwidWlkIjoxMjN9LHsiZGF0YSI6eyJyZWFsaXplZF9sZXhlbWUiOiLXnta315nWtNedIn0sImludmVydGVkIjpmYWxzZSwidWlkIjoxMjR9XSwibm9kZSI6ImNsYXVzZV9ub2RlX2lkIn0='
