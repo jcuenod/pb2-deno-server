@@ -4,16 +4,16 @@
  * inverted search term.
  *
  * This should work on something like:
-    {
-      "_vt": "impv",
-      "_vs": "piel"
-    }
+	{
+	  "_vt": "impv",
+	  "_vs": "piel"
+	}
  *
  */
 const invertedSingleTermCTE = tree_node_type => term_features => {
 	const termKeys = Object.keys(term_features)
-	validateKeysOrThrow(termKeys)
-	const featureIntersection = termKeys.map((k, i) => `f${i}.wids`).join(" & ")
+	// validateKeysOrThrow(termKeys)
+	const featureIntersection = termKeys.map((k, i) => `f${i}.word_uids`).join(" & ")
 	const fromClause = termKeys.map((k, i) =>
 		`feature_index AS f${i}`
 	).join(",\n\t\t\t\t\t")
@@ -22,17 +22,22 @@ const invertedSingleTermCTE = tree_node_type => term_features => {
 	).join(" AND ")
 	return `(
 		SELECT
-			word_features.${tree_node_type} AS inverted_tree_node_array
+			word_features.version_id AS version_id,
+			word_features.${tree_node_type} AS tree_node
 		FROM (
 				SELECT
-					UNNEST(${featureIntersection}) AS wid
+					UNNEST(${featureIntersection}) AS word_uid
 				FROM
 					${fromClause}
 				WHERE
 					${whereClause}
-			) AS wid_list,
+			) AS word_uid_list,
 			word_features
 		WHERE
-			wid_list.wid = word_features.wid)`
+			word_uid_list.word_uid = word_features.word_uid)`
 }
-export default invertedSingleTermCTE
+
+const invertedWhereClause = index =>
+	`ROW (w0.tree_node, w0.version_id) NOT IN (SELECT tree_node, version_id FROM wi${index})`
+
+export { invertedSingleTermCTE, invertedWhereClause }
