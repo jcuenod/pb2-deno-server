@@ -138,6 +138,8 @@ const generateSqlForTreeNodesWithTerms = ({
 			
 			WHERE
 				${whereClause}
+
+			ORDER BY tree_node
 			
 			${paginationClause}`
 	}
