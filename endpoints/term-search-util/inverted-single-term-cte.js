@@ -10,23 +10,23 @@
 	}
  *
  */
-const invertedSingleTermCTE = tree_node_type => term_features => {
-	const termKeys = Object.keys(term_features)
+const invertedSingleTermCTE = treeNodeType => termFeatures => {
+	const termKeys = Object.keys(termFeatures)
 	// validateKeysOrThrow(termKeys)
 	const featureIntersection = termKeys.map((k, i) => `f${i}.word_uids`).join(" & ")
 	const fromClause = termKeys.map((k, i) =>
 		`feature_index AS f${i}`
 	).join(",\n\t\t\t\t\t")
 	const whereClause = termKeys.map((k, i) =>
-		`f${i}.feature = '${k}' AND f${i}.value = '${term_features[k]}'`
+		`f${i}.feature = '${k}' AND f${i}.value = '${termFeatures[k]}'`
 	).join(" AND ")
 	return `(
 		SELECT
-			word_features.version_id AS version_id,
-			word_features.${tree_node_type} AS tree_node
+			word_features.module_id AS module_id,
+			word_features.${treeNodeType} AS tree_node
 		FROM (
 				SELECT
-					UNNEST(${featureIntersection}) AS word_uid
+					(${featureIntersection}) AS word_uid
 				FROM
 					${fromClause}
 				WHERE
@@ -34,10 +34,12 @@ const invertedSingleTermCTE = tree_node_type => term_features => {
 			) AS word_uid_list,
 			word_features
 		WHERE
-			word_uid_list.word_uid = word_features.word_uid)`
+			word_features.word_uid = ANY (word_uid_list.word_uid) AND
+			word_features.${treeNodeType} IS NOT NULL
+	)`
 }
 
 const invertedWhereClause = index =>
-	`ROW (w0.tree_node, w0.version_id) NOT IN (SELECT tree_node, version_id FROM wi${index})`
+	`ROW (w0.module_id, w0.tree_node) NOT IN (SELECT module_id, tree_node FROM wi${index})`
 
 export { invertedSingleTermCTE, invertedWhereClause }

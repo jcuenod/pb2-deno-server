@@ -12,8 +12,12 @@
 	}
  *
  */
-const singleTermCTE = tree_node_type => term_features => {
-	const termKeys = Object.keys(term_features)
+
+// If treeNodeType = parallel_id, there's no need to match on MODULE_id
+const DONT_MODULE_MATCH = "parallel_id"
+
+const singleTermCTE = treeNodeType => termFeatures => {
+	const termKeys = Object.keys(termFeatures)
 	const featureIntersection = termKeys.map((k, i) => `f${i}.word_uids`).join(" & ")
 
 	const fromClause = termKeys.map((k, i) =>
@@ -21,17 +25,25 @@ const singleTermCTE = tree_node_type => term_features => {
 	).join(",\n\t\t\t\t\t")
 
 	const whereClause = termKeys.map((k, i) =>
-		`f${i}.feature = '${k}' AND f${i}.value = '${term_features[k]}'`
+		`f${i}.feature = '${k}' AND f${i}.value = '${termFeatures[k]}'`
 	).join(" AND ")
+
+	const possibleModuleSelect = treeNodeType === DONT_MODULE_MATCH
+		? ""
+		: "word_features.MODULE_id AS MODULE_id,"
+	const possibleModuleGroup = treeNodeType === DONT_MODULE_MATCH
+		? ""
+		: "MODULE_id,"
 
 	return `(
 		SELECT
-			array_agg(word_uid_list.word_uid) AS word_uid,
-			word_features.${tree_node_type} AS tree_node,
-			word_features.version_id AS version_id
+			uniq(array_agg(word_features.parallel_id)) as parallel_ids,
+			array_agg(word_features.wid) AS wids,
+			${possibleModuleSelect}
+			word_features.${treeNodeType} AS tree_node
 		FROM (
 				SELECT
-					UNNEST(${featureIntersection}) AS word_uid
+					(${featureIntersection}) AS word_uid
 				FROM
 					${fromClause}
 				WHERE
@@ -39,8 +51,17 @@ const singleTermCTE = tree_node_type => term_features => {
 			) AS word_uid_list,
 			word_features
 		WHERE
-			word_uid_list.word_uid = word_features.word_uid
+			word_features.word_uid = ANY (word_uid_list.word_uid) AND
+			word_features.${treeNodeType} IS NOT NULL
 		GROUP BY
-			tree_node, version_id)`
+			${possibleModuleGroup}
+			tree_node
+	)`
 }
-export default singleTermCTE
+
+const moduleMatch = (flag) =>
+	flag ? "" : ` AND w0.MODULE_id = w${index}.MODULE_id`
+const singleTermWhereClause = (index, treeNodeType) =>
+	`w0.tree_node = w${index}.tree_node` + moduleMatch(index, treeNodeType === DONT_MODULE_MATCH)
+
+export { singleTermCTE, singleTermWhereClause }
